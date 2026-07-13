@@ -201,7 +201,7 @@
     document.getElementById("holdingsRows").innerHTML = `
       ${rows.map((holding) => `
         <tr>
-          <td>${holding.rank}. ${escapeHtml(holding.name)}</td>
+          <td>${escapeHtml(holding.name)}</td>
           <td>${escapeHtml(holding.assetClass)}</td>
           <td>${formatPercent(holding.weight)}%</td>
         </tr>`).join("")}

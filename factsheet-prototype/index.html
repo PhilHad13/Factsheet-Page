@@ -961,6 +961,10 @@
         align-items: stretch;
       }
 
+      .variance-cell {
+        display: none;
+      }
+
       .allocation-value,
       .allocation-diff {
         text-align: left;
@@ -968,6 +972,15 @@
 
       .donut-layout {
         grid-template-columns: 1fr;
+      }
+
+      .donut-layout > svg {
+        justify-self: center;
+      }
+
+      .holdings thead th:nth-child(2),
+      .holdings tbody tr:not(.total) td:nth-child(2) {
+        display: none;
       }
 
       .mini-table {
@@ -1475,6 +1488,6 @@
     renderHoldings();
   </script>
   <script src="data/factsheets.js?v=20260713"></script>
-  <script src="factsheet.js?v=20260713-1"></script>
+  <script src="factsheet.js?v=20260713-2"></script>
 </body>
 </html>
