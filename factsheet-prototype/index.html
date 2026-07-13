@@ -1,0 +1,1480 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Portfolio Information Hub</title>
+  <style>
+    :root {
+      --tam-blue: #005daa;
+      --tam-blue-2: #0b70bf;
+      --ink: #263238;
+      --muted: #60717c;
+      --line: #d9e1e6;
+      --panel: #f4f7f9;
+      --soft-blue: #e8f2fb;
+      --green: #17895b;
+      --amber: #c77700;
+      --red: #b94848;
+      --white: #ffffff;
+      --shadow: 0 18px 45px rgba(27, 47, 61, 0.10);
+      font-family: Inter, Aptos, "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f9fb;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page-shell {
+      min-height: 100vh;
+    }
+
+    .top-warning {
+      background: #ffffff;
+      color: #4d5961;
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .masthead {
+      background:
+        linear-gradient(110deg, rgba(255,255,255,0.92), rgba(232,242,251,0.88)),
+        radial-gradient(circle at 82% 18%, rgba(0, 93, 170, 0.15), transparent 28%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .masthead-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .brand-title strong {
+      color: var(--tam-blue);
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      text-transform: uppercase;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .brand-title span {
+      color: #4c555b;
+      font-size: clamp(0.95rem, 1.5vw, 1.18rem);
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .selector-panel {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 1.25rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+      align-items: stretch;
+    }
+
+    .selector-group {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.85rem;
+      box-shadow: 0 10px 30px rgba(27, 47, 61, 0.08);
+    }
+
+    .quick-selectors {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .selector-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: flex-start;
+      min-width: 220px;
+    }
+
+    .selector-field .selector-label {
+      margin-bottom: 0.6rem;
+    }
+
+    .selector-label {
+      color: #586873;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .selector-options {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .choice {
+      border: 1px solid #cbd8e0;
+      background: #fff;
+      color: #34444f;
+      min-height: 2.25rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: 6px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 750;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .choice:hover {
+      border-color: var(--tam-blue);
+      color: var(--tam-blue);
+    }
+
+    .choice.is-active {
+      background: var(--tam-blue);
+      border-color: var(--tam-blue);
+      color: #fff;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.18);
+    }
+
+    .choice:disabled,
+    .range-button:disabled {
+      background: #e6e9ed;
+      border-color: #d4d9df;
+      box-shadow: none;
+      color: #929aa4;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    .choice:disabled:hover,
+    .range-button:disabled:hover {
+      background: #e6e9ed;
+      border-color: #d4d9df;
+      color: #929aa4;
+    }
+
+    .issue-bar {
+      background: var(--tam-blue);
+      color: #fff;
+    }
+
+    .issue-bar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0.9rem 1.25rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .issue-date {
+      justify-self: stretch;
+    }
+
+    .information-disclaimer {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      padding: 0.7rem 1.25rem;
+      background: #ffffff;
+      color: #4d5961;
+      text-align: center;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .information-disclaimer strong {
+      color: #263238;
+    }
+
+    .selected-portfolio {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.15rem;
+    }
+
+    .selected-portfolio small {
+      font-size: 0.78rem;
+      font-weight: 750;
+      line-height: 1.2;
+      opacity: 0.82;
+      white-space: nowrap;
+    }
+
+    .selected-portfolio > div {
+      font-size: clamp(1.1rem, 2vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .button {
+      min-height: 2.5rem;
+      border: 1px solid rgba(255,255,255,0.42);
+      background: #fff;
+      color: var(--tam-blue);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 750;
+      text-transform: none;
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    .button[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1.35rem 1.25rem 2rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 1rem;
+    }
+
+    .section {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.85rem 1rem 0.45rem;
+      border-bottom: 5px solid #d7d7d7;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      color: var(--tam-blue);
+      font-size: 1rem;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .section-header .as-of {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .section-body {
+      padding: 1rem;
+    }
+
+    .objective p {
+      margin: 0 0 1rem;
+      color: #52616b;
+      font-size: 1rem;
+    }
+
+    .objective p:last-child {
+      margin-bottom: 0;
+    }
+
+    .fact-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    .fact-table th,
+    .fact-table td {
+      padding: 0.85rem 0.75rem;
+      border-bottom: 1px solid #cfd8de;
+      vertical-align: top;
+    }
+
+    .fact-table th {
+      width: 48%;
+      text-align: left;
+      color: #52616b;
+      font-weight: 650;
+      background: #f3f5f6;
+    }
+
+    .fact-table td {
+      color: #34444f;
+      background: #fafafa;
+    }
+
+    .grid-wide {
+      grid-column: 1 / -1;
+    }
+
+    .performance-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    .chart-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      min-width: 0;
+    }
+
+    .chart-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chart-title {
+      color: #52616b;
+      font-size: 0.92rem;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    .range-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .range-button {
+      border: 1px solid #cbd8e0;
+      background: #fff;
+      color: #34444f;
+      min-height: 2rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 750;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .range-button:hover {
+      border-color: var(--tam-blue);
+      color: var(--tam-blue);
+    }
+
+    .range-button.is-active {
+      background: var(--tam-blue);
+      border-color: var(--tam-blue);
+      color: #fff;
+    }
+
+    .chart-wrap {
+      aspect-ratio: 760 / 300;
+      position: relative;
+      width: 100%;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .swatch {
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch.blue {
+      background: var(--tam-blue);
+    }
+
+    .swatch.amber {
+      background: var(--amber);
+    }
+
+    .performance-table {
+      display: grid;
+      gap: 0.8rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .performance-table .mini-table:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .performance-basis {
+      grid-column: 1 / -1;
+      padding: 0.85rem 1rem;
+      border-left: 4px solid var(--tam-blue);
+      border-radius: 0 6px 6px 0;
+      background: #f3f7fa;
+      color: #4d5961;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .performance-basis strong {
+      color: var(--tam-blue);
+      margin-right: 0.2rem;
+    }
+
+    .important-information {
+      padding: 1rem 1.1rem;
+      background: #f3f7fa;
+      color: #4d5961;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .important-information p {
+      margin: 0 0 0.65rem;
+    }
+
+    .important-information p:last-child {
+      margin-bottom: 0;
+    }
+
+    .mini-table {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .mini-table h3 {
+      margin: 0;
+      background: var(--tam-blue);
+      color: #fff;
+      text-align: center;
+      padding: 0.65rem;
+      font-size: 1rem;
+    }
+
+    .mini-table table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 0.9rem;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      padding: 0.65rem 0.45rem;
+      border: 1px solid #d4dce1;
+      text-align: center;
+    }
+
+    .mini-table th {
+      background: #d8d8d8;
+      color: #4e5960;
+      font-weight: 650;
+    }
+
+    .mini-table td {
+      background: #f8f8f8;
+      color: #2f3b43;
+      font-weight: 650;
+    }
+
+    .mini-table tr.portfolio-row th,
+    .mini-table tr.portfolio-row td {
+      background: var(--soft-blue);
+      color: var(--tam-blue);
+      font-weight: 850;
+    }
+
+    .mini-table tr.benchmark-row th,
+    .mini-table tr.benchmark-row td {
+      background: #fff;
+      color: #2f3b43;
+      font-weight: 650;
+    }
+
+    .mini-table tr.difference-row th,
+    .mini-table tr.difference-row td {
+      background: #eef3f6;
+      color: #34444f;
+      font-weight: 800;
+    }
+
+    .mini-table tr td.performance-positive {
+      color: var(--green);
+    }
+
+    .mini-table tr td.performance-negative {
+      color: var(--red);
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .composition-body {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .composition-panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .allocation-bars {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .allocation-controls {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .allocation-button {
+      min-height: 2rem;
+      border: 1px solid #cbd8e0;
+      background: #fff;
+      color: var(--tam-blue);
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .allocation-button.is-active {
+      background: var(--tam-blue);
+      border-color: var(--tam-blue);
+      color: #fff;
+    }
+
+    .allocation-header,
+    .allocation-row {
+      display: grid;
+      grid-template-columns: 125px minmax(0, 1fr) minmax(150px, 0.9fr);
+      gap: 0.75rem;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+
+    .allocation-header {
+      color: #596871;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .allocation-value-heading {
+      display: inline-block;
+      width: 44px;
+      text-align: right;
+    }
+
+    .variance-heading {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .variance-heading span:first-child {
+      text-align: right;
+    }
+
+    .allocation-row {
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    .allocation-name {
+      font-weight: 750;
+      color: #3d4d57;
+    }
+
+    .allocation-name.sub-allocation {
+      padding-left: 1rem;
+      color: #60717c;
+      font-weight: 700;
+    }
+
+    .allocation-bar-cell {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .allocation-track {
+      height: 14px;
+      background: #e9eef1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .allocation-fill {
+      height: 100%;
+      background: var(--tam-blue);
+      border-radius: 4px;
+      width: var(--allocation);
+    }
+
+    .allocation-value {
+      font-weight: 800;
+      text-align: right;
+      color: #34444f;
+    }
+
+    .variance-cell {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .variance-track {
+      height: 14px;
+      background: #e9eef1;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .variance-track::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      height: 100%;
+      border-left: 1px solid #8fa0aa;
+    }
+
+    .variance-fill {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: var(--variance);
+      border-radius: 4px;
+    }
+
+    .variance-fill.positive {
+      left: 50%;
+      background: var(--green);
+    }
+
+    .variance-fill.negative {
+      right: 50%;
+      background: var(--red);
+    }
+
+    .allocation-diff {
+      text-align: right;
+      font-weight: 850;
+      color: #34444f;
+    }
+
+    .allocation-diff.positive {
+      color: var(--green);
+    }
+
+    .allocation-diff.negative {
+      color: var(--red);
+    }
+
+    .donut-layout {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .region-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .region-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .region-table th,
+    .region-table td {
+      padding: 0.55rem 0.45rem;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .region-table th {
+      color: #596871;
+      font-weight: 800;
+      background: var(--panel);
+    }
+
+    .region-table th:first-child,
+    .region-table td:first-child {
+      text-align: left;
+      white-space: normal;
+    }
+
+    .region-table th:last-child,
+    .region-table td:last-child {
+      font-weight: 800;
+      min-width: 110px;
+      padding-right: 1.5rem;
+    }
+
+    .dot {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .holdings table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    .holdings-controls {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .holdings-button {
+      min-height: 2rem;
+      border: 1px solid #cbd8e0;
+      background: #fff;
+      color: var(--tam-blue);
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .holdings-button.is-active {
+      background: var(--tam-blue);
+      border-color: var(--tam-blue);
+      color: #fff;
+    }
+
+    .holdings th,
+    .holdings td {
+      padding: 0.7rem 0.65rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .holdings th {
+      color: #596871;
+      background: var(--panel);
+      text-align: left;
+      font-weight: 750;
+    }
+
+    .holdings td:last-child,
+    .holdings th:last-child {
+      text-align: right;
+      width: 90px;
+    }
+
+    .holdings tr.total td {
+      background: #f0f2f3;
+      font-weight: 800;
+    }
+
+    .footer {
+      margin-top: 1rem;
+      background: #7a7e81;
+      color: #fff;
+      font-weight: 750;
+      padding: 0.9rem 1rem;
+      text-align: center;
+    }
+
+    .disclaimer {
+      max-width: 1180px;
+      margin: 0 auto;
+      color: #687782;
+      font-size: 0.82rem;
+      padding: 0.8rem 1.25rem 1.6rem;
+      font-style: italic;
+    }
+
+    svg.chart {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: block;
+    }
+
+    .axis-label {
+      fill: #62717b;
+      font-size: 11px;
+    }
+
+    .grid-line {
+      stroke: #dce4e9;
+      stroke-width: 1;
+    }
+
+    @media (max-width: 900px) {
+      .masthead-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .selector-panel {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .performance-grid,
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .performance-table {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+    @media (max-width: 620px) {
+      .issue-bar-inner {
+        gap: 0.65rem;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      }
+
+      .selected-portfolio > div {
+        font-size: 0.95rem;
+      }
+
+      .button {
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+        font-size: 0.78rem;
+      }
+
+      .selector-panel {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .selector-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .choice {
+        white-space: normal;
+      }
+
+      .section-body,
+      .section-header {
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+      }
+
+      .allocation-header {
+        display: none;
+      }
+
+      .allocation-row {
+        grid-template-columns: 1fr;
+        gap: 0.45rem;
+        align-items: stretch;
+      }
+
+      .allocation-value,
+      .allocation-diff {
+        text-align: left;
+      }
+
+      .donut-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-table {
+        overflow-x: auto;
+      }
+
+      .mini-table table {
+        min-width: 500px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .issue-bar-inner {
+        grid-template-columns: 1fr;
+        justify-items: start;
+      }
+
+      .issue-date {
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="top-warning">Financial promotion for professional investors and advisers only. Not to be relied upon by retail investors.</div>
+
+    <header class="masthead">
+      <div class="masthead-inner">
+        <div class="brand-title">
+          <strong>Model Portfolio Information Hub</strong>
+          <span id="hubSubtitle">View the Asset Allocation and Performance for each model. Download the latest factsheet.</span>
+        </div>
+      </div>
+      <div class="selector-panel" aria-label="Portfolio selector">
+        <div class="selector-group quick-selectors">
+          <div class="selector-field">
+            <div class="selector-label">Portfolio Type</div>
+            <div class="selector-options" data-filter-group="type">
+              <button class="choice is-active" type="button" data-value="Active" aria-pressed="true">Active</button>
+              <button class="choice" type="button" data-value="Passive" aria-pressed="false">Passive</button>
+            </div>
+          </div>
+          <div class="selector-field">
+            <div class="selector-label">Currency</div>
+            <div class="selector-options" data-filter-group="currency">
+              <button class="choice is-active" type="button" data-value="GBP" aria-pressed="true">GBP</button>
+              <button class="choice" type="button" data-value="EUR" aria-pressed="false">EUR</button>
+              <button class="choice" type="button" data-value="USD" aria-pressed="false">USD</button>
+            </div>
+          </div>
+        </div>
+        <div class="selector-group">
+          <div class="selector-label">Risk Profile</div>
+          <div class="selector-options" data-filter-group="risk">
+            <button class="choice" type="button" data-value="Defensive 20" aria-pressed="false">Defensive 20</button>
+            <button class="choice" type="button" data-value="Cautious 40" aria-pressed="false">Cautious 40</button>
+            <button class="choice is-active" type="button" data-value="Balanced 60" aria-pressed="true">Balanced 60</button>
+            <button class="choice" type="button" data-value="Growth 80" aria-pressed="false">Growth 80</button>
+            <button class="choice" type="button" data-value="High Growth 100" aria-pressed="false">High Growth 100</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="issue-bar">
+      <div class="issue-bar-inner">
+        <div class="selected-portfolio">
+          <small>Selected Portfolio</small>
+          <div id="selectedPortfolio">Active Balanced 60 GBP</div>
+        </div>
+        <div class="selected-portfolio issue-date">
+          <small>Information updated as at</small>
+          <div id="dataAsOf">—</div>
+        </div>
+        <a class="button" id="downloadFactsheet" href="#" aria-label="Download factsheet PDF" aria-disabled="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <path d="M7 10l5 5 5-5"></path>
+            <path d="M12 15V3"></path>
+          </svg>
+          Download factsheet .pdf
+        </a>
+      </div>
+    </div>
+
+    <div class="information-disclaimer" role="note">
+      <strong>For information purposes only.</strong>
+      <span>Past performance is not a reliable indicator of future results.</span>
+    </div>
+
+    <main>
+      <section class="section objective">
+        <div class="section-header">
+          <h2>Objective</h2>
+        </div>
+        <div class="section-body" id="objectiveText">
+          <p>This portfolio comprises a wide range of diversified investment vehicles including unit trusts, mutual funds and exchange traded funds (ETFs), whose managers aim to outperform their respective markets.</p>
+          <p>Active Balanced 60 seeks to generate capital growth over the medium term, with the aim of riding out short-term fluctuations in value.</p>
+          <p>The portfolio will typically comprise 60% equity and 40% non-equity though weightings may deviate within set parameters, allowing managers to react to market conditions.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Portfolio Information</h2>
+        </div>
+        <div class="section-body" style="padding:0;">
+          <table class="fact-table">
+            <tbody id="portfolioInfoRows">
+              <tr><th>Portfolio Benchmark</th><td>60% Global Equity, 40% Global Bond</td></tr>
+              <tr><th>Inception Date</th><td>31 December 2009</td></tr>
+              <tr><th>Accessibility</th><td>Direct, Pension, Life Bond, Trust</td></tr>
+              <tr><th>Suggested Investment Horizon</th><td>5 years+</td></tr>
+              <tr><th>Minimum Investment</th><td>GBP 7,500</td></tr>
+              <tr><th>Underlying Fund TER</th><td>0.47%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section grid-wide">
+        <div class="section-header">
+          <h2>Performance</h2>
+        </div>
+        <div class="section-body performance-grid">
+          <div class="chart-panel">
+            <div class="chart-toolbar">
+              <div class="chart-title">Performance Comparison</div>
+              <div class="range-options" aria-label="Performance chart period">
+                <button class="range-button" type="button" data-years="1" aria-pressed="false">1 Year</button>
+                <button class="range-button" type="button" data-years="3" aria-pressed="false">3 Year</button>
+                <button class="range-button is-active" type="button" data-years="5" aria-pressed="true">5 Year</button>
+                <button class="range-button" type="button" data-years="10" aria-pressed="false">10 Year</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <svg class="chart" id="performanceChart" viewBox="0 0 760 300" preserveAspectRatio="xMidYMid meet" aria-label="Performance chart comparing portfolio and benchmark"></svg>
+            </div>
+            <div class="legend">
+              <span><i class="swatch blue"></i><span id="portfolioLegend">Active Balanced 60 GBP</span></span>
+              <span><i class="swatch amber"></i>Benchmark</span>
+            </div>
+          </div>
+
+          <div class="performance-table">
+            <div class="mini-table">
+              <h3>Cumulative Return</h3>
+              <table>
+                <thead id="cumulativeHead">
+                  <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Inception</th></tr>
+                </thead>
+                <tbody id="cumulativeRows">
+                  <tr class="portfolio-row"><th>Portfolio</th><td>13.73</td><td>28.23</td><td>29.55</td><td>67.23</td><td>146.05</td></tr>
+                  <tr class="benchmark-row"><th>Benchmark</th><td>12.00</td><td>25.50</td><td>27.00</td><td>61.00</td><td>132.00</td></tr>
+                  <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+2.73</td><td>+2.55</td><td>+6.23</td><td>+14.05</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mini-table">
+              <h3>Annualised Returns</h3>
+              <table>
+                <thead id="annualisedHead">
+                  <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Volatility</th></tr>
+                </thead>
+                <tbody id="annualisedRows">
+                  <tr class="portfolio-row"><th>Portfolio</th><td>13.73</td><td>8.64</td><td>5.32</td><td>5.27</td><td>6.85</td></tr>
+                  <tr class="benchmark-row"><th>Benchmark</th><td>12.00</td><td>7.87</td><td>4.90</td><td>4.88</td><td>6.40</td></tr>
+                  <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+0.77</td><td>+0.42</td><td>+0.39</td><td>+0.45</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mini-table">
+              <h3>Calendar Year Returns</h3>
+              <table>
+                <thead id="calendarHead">
+                  <tr><th></th><th>2022</th><th>2023</th><th>2024</th><th>2025</th><th>2026 YTD</th></tr>
+                </thead>
+                <tbody id="calendarRows">
+                  <tr class="portfolio-row"><th>Portfolio</th><td>-6.48</td><td>10.96</td><td>8.21</td><td>12.72</td><td>0.10</td></tr>
+                  <tr class="benchmark-row"><th>Benchmark</th><td>-5.16</td><td>9.43</td><td>7.50</td><td>11.80</td><td>0.30</td></tr>
+                  <tr class="difference-row"><th>Difference</th><td>-1.32</td><td>+1.53</td><td>+0.71</td><td>+0.92</td><td>-0.20</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="performance-basis" role="note">
+            <strong>Performance Basis:</strong>
+            Returns are shown net of investment management fees (where applicable) and are calculated in the portfolio's base currency. Performance does not take account of taxation or any adviser charges unless otherwise stated.
+          </div>
+        </div>
+      </section>
+
+      <section class="section grid-wide composition-section">
+        <div class="section-header">
+          <h2>Portfolio Composition</h2>
+        </div>
+        <div class="section-body composition-body">
+          <div class="split-grid">
+        <section class="composition-panel">
+          <div class="section-header">
+            <h2>Asset Allocation %</h2>
+            <div class="allocation-controls" aria-label="Asset allocation view">
+              <button class="allocation-button is-active" type="button" data-allocation-view="summary" aria-pressed="true">Summary</button>
+              <button class="allocation-button" type="button" data-allocation-view="expanded" aria-pressed="false">Expanded</button>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="allocation-bars">
+              <div class="allocation-header">
+                <span>Asset Class</span>
+                <span class="allocation-value-heading">Portfolio %</span>
+                <span class="variance-heading"><span></span><span>vs Benchmark</span></span>
+              </div>
+              <div id="allocationRows"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="composition-panel">
+          <div class="section-header">
+            <h2>Regional Exposure</h2>
+          </div>
+          <div class="section-body donut-layout">
+            <svg id="regionalChart" viewBox="0 0 180 180" width="180" height="180" aria-label="Regional exposure donut chart">
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#386a9f" stroke-width="34" stroke-dasharray="245 390" transform="rotate(-90 90 90)"></circle>
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#6e95c6" stroke-width="34" stroke-dasharray="74 390" stroke-dashoffset="-245" transform="rotate(-90 90 90)"></circle>
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#98b1d7" stroke-width="34" stroke-dasharray="39 390" stroke-dashoffset="-319" transform="rotate(-90 90 90)"></circle>
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#b9c7df" stroke-width="34" stroke-dasharray="31 390" stroke-dashoffset="-358" transform="rotate(-90 90 90)"></circle>
+              <circle cx="90" cy="90" r="37" fill="#ffffff"></circle>
+            </svg>
+            <table class="region-table">
+              <thead>
+                <tr><th>Region</th><th aria-label="Portfolio allocation"></th></tr>
+              </thead>
+              <tbody id="regionalRows">
+                <tr><td><span class="region-name"><i class="dot" style="background:#386a9f;"></i>US</span></td><td>63%</td></tr>
+                <tr><td><span class="region-name"><i class="dot" style="background:#6e95c6;"></i>Europe</span></td><td>19%</td></tr>
+                <tr><td><span class="region-name"><i class="dot" style="background:#98b1d7;"></i>Developed Asia</span></td><td>10%</td></tr>
+                <tr><td><span class="region-name"><i class="dot" style="background:#b9c7df;"></i>Emerging Markets</span></td><td>8%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+          </div>
+
+      <section class="composition-panel holdings">
+        <div class="section-header">
+          <h2 id="holdingsTitle">Top 5 Holdings</h2>
+          <div class="holdings-controls" aria-label="Holdings list size">
+            <button class="holdings-button is-active" type="button" data-holdings-count="5" aria-pressed="true">Top 5</button>
+            <button class="holdings-button" type="button" data-holdings-count="10" aria-pressed="false">Top 10</button>
+          </div>
+        </div>
+        <div class="section-body" style="padding:0;">
+          <table>
+            <thead>
+              <tr><th>Holding</th><th>Asset Class</th><th>Weight</th></tr>
+            </thead>
+            <tbody id="holdingsRows">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+        </div>
+      </section>
+
+      <section class="section grid-wide">
+        <div class="section-header">
+          <h2>Important Information</h2>
+        </div>
+        <div class="section-body important-information" role="note">
+          <p>The information contained on this page is provided for general information purposes only and does not constitute financial, investment, legal or tax advice, nor should it be regarded as an offer, solicitation or recommendation to buy or sell any investment or financial product.</p>
+          <p>Portfolio information, asset allocations, holdings, performance data and other statistics are believed to be accurate as at the date shown but may change without notice. Whilst reasonable care has been taken in preparing this information, TAM Asset Management International Ltd does not warrant its accuracy or completeness.</p>
+          <p>The value of investments, and any income derived from them, may rise or fall due to market movements, and investors may receive back less than the amount originally invested. Past performance is not a reliable indicator of future results.</p>
+          <p>Investment decisions should not be based solely on the information contained in these factsheets. Investors should consider the relevant offering documentation and, where appropriate, seek independent professional advice before making any investment decision.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer">TAM Asset Management International Ltd | Nexteracom Tower 1, Ebene, 72201, Mauritius | +230 454 6400 | www.tamint.com</div>
+      <div class="disclaimer">Copyright © 2024 TAM Asset Management International Limited. All Rights Reserved. This document is intended for investment professionals only. Past performance is not necessarily a guide to future returns. The value of investments, and the income from them, may go down as well as up and may fall below the amount initially invested.</div>
+    </footer>
+  </div>
+
+  <script type="text/plain" id="legacyPrototypeScript">
+    const selection = {
+      type: "Active",
+      risk: "Balanced 60",
+      currency: "GBP"
+    };
+
+    function updateSelectedPortfolio() {
+      const portfolioName = `${selection.type} ${selection.risk} ${selection.currency}`;
+      document.getElementById("selectedPortfolio").textContent = portfolioName;
+      document.title = `Model Portfolio Information Hub - ${portfolioName}`;
+    }
+
+    document.querySelectorAll(".selector-options").forEach(group => {
+      group.addEventListener("click", event => {
+        const button = event.target.closest(".choice");
+        if (!button) return;
+
+        group.querySelectorAll(".choice").forEach(choice => choice.classList.remove("is-active"));
+        button.classList.add("is-active");
+        selection[group.dataset.filterGroup] = button.dataset.value;
+        updateSelectedPortfolio();
+      });
+    });
+
+    const allocationSummary = [
+      { name: "Equities", allocation: 48, diff: -12 },
+      { name: "Bonds", allocation: 23, diff: -17 },
+      { name: "Alternatives", allocation: 25, diff: 25 },
+      { name: "Cash", allocation: 4, diff: 4 }
+    ];
+
+    const allocationExpanded = [
+      { name: "Equities", allocation: 48, diff: -12 },
+      { name: "Bonds", allocation: 23, diff: -17 },
+      { name: "Sovereign", allocation: 6, diff: -5, sub: true },
+      { name: "Corporate", allocation: 8, diff: -6, sub: true },
+      { name: "Aggregate", allocation: 7, diff: -4, sub: true },
+      { name: "Money Market", allocation: 2, diff: -2, sub: true },
+      { name: "Alternatives", allocation: 25, diff: 25 },
+      { name: "Commodity", allocation: 6, diff: 6, sub: true },
+      { name: "Property", allocation: 5, diff: 5, sub: true },
+      { name: "Absolute Return", allocation: 14, diff: 14, sub: true },
+      { name: "Cash", allocation: 4, diff: 4 }
+    ];
+
+    function renderAllocation(view = "summary") {
+      const rows = view === "expanded" ? allocationExpanded : allocationSummary;
+      document.getElementById("allocationRows").innerHTML = rows.map(row => {
+        const direction = row.diff >= 0 ? "positive" : "negative";
+        const varianceWidth = Math.min(Math.abs(row.diff) * 2, 50);
+        return `
+          <div class="allocation-row">
+            <span class="allocation-name${row.sub ? " sub-allocation" : ""}">${row.name}</span>
+            <div class="allocation-bar-cell"><span class="allocation-value">${row.allocation}%</span><div class="allocation-track"><div class="allocation-fill" style="--allocation:${row.allocation}%;"></div></div></div>
+            <div class="variance-cell"><span class="allocation-diff ${direction}">${row.diff > 0 ? "+" : ""}${row.diff}%</span><div class="variance-track"><div class="variance-fill ${direction}" style="--variance:${varianceWidth}%;"></div></div></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    document.querySelectorAll(".allocation-button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".allocation-button").forEach(option => option.classList.remove("is-active"));
+        button.classList.add("is-active");
+        renderAllocation(button.dataset.allocationView);
+      });
+    });
+
+    const holdingsData = [
+      ["Vanguard Global Bond Index Fund", "Bonds", 10.00],
+      ["T. Rowe Price US Research Equity Fund", "Equities", 7.00],
+      ["Artemis SmartGARP Global EM Equity Fund", "Equities", 6.00],
+      ["JP Morgan Global Research Enhanced Equity Fund", "Equities", 6.00],
+      ["Lansdowne Partners Developed Markets Fund", "Equities", 6.00],
+      ["TwentyFour Strategic Income Fund", "Bonds", 4.50],
+      ["PIMCO Global Investment Grade Credit Fund", "Bonds", 4.25],
+      ["BlackRock ICS Sterling Liquidity Fund", "Cash", 4.00],
+      ["Schroder Global Recovery Fund", "Equities", 3.75],
+      ["Ruffer Total Return International", "Alternatives", 3.50],
+      ["M&G Global Listed Infrastructure Fund", "Alternatives", 3.25],
+      ["Vontobel TwentyFour Absolute Return Credit", "Alternatives", 3.00],
+      ["Fidelity Asia Pacific Opportunities Fund", "Equities", 2.90],
+      ["Morgan Stanley Global Brands Fund", "Equities", 2.80],
+      ["iShares Physical Gold ETC", "Alternatives", 2.70],
+      ["Baillie Gifford Worldwide Discovery Fund", "Equities", 2.60],
+      ["Royal London Short Duration Global Bond", "Bonds", 2.50],
+      ["Man GLG Alpha Select Alternative", "Alternatives", 2.40],
+      ["Vanguard FTSE Developed Europe ETF", "Equities", 2.30],
+      ["Cash and Settlements", "Cash", 2.20]
+    ];
+
+    function renderHoldings(count = 5) {
+      const rows = holdingsData.slice(0, count);
+      const totalWeight = rows.reduce((sum, holding) => sum + holding[2], 0);
+      document.getElementById("holdingsTitle").textContent = `Top ${count} Holdings`;
+      document.getElementById("holdingsRows").innerHTML = `
+        ${rows.map((holding, index) => `
+          <tr>
+            <td>${index + 1}. ${holding[0]}</td>
+            <td>${holding[1]}</td>
+            <td>${holding[2].toFixed(2)}%</td>
+          </tr>
+        `).join("")}
+        <tr class="total"><td colspan="2">Top ${count} holdings as % of whole portfolio</td><td>${totalWeight.toFixed(2)}%</td></tr>
+        <tr class="total"><td colspan="2">Total number of holdings</td><td>${holdingsData.length}</td></tr>
+      `;
+    }
+
+    document.querySelectorAll(".holdings-button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".holdings-button").forEach(option => option.classList.remove("is-active"));
+        button.classList.add("is-active");
+        renderHoldings(Number(button.dataset.holdingsCount));
+      });
+    });
+
+    const chartHistory = [
+      ["Mar 16", 100.00, 100.00, true],
+      ["Jun 16", 101.80, 101.20, false],
+      ["Sep 16", 103.40, 102.30, false],
+      ["Dec 16", 105.90, 104.60, false],
+      ["Mar 17", 107.20, 105.90, true],
+      ["Jun 17", 109.60, 107.80, false],
+      ["Sep 17", 111.10, 109.20, false],
+      ["Dec 17", 114.40, 111.80, false],
+      ["Mar 18", 113.10, 110.90, true],
+      ["Jun 18", 115.00, 112.30, false],
+      ["Sep 18", 116.70, 113.80, false],
+      ["Dec 18", 112.40, 110.20, false],
+      ["Mar 19", 116.20, 113.70, true],
+      ["Jun 19", 119.40, 116.10, false],
+      ["Sep 19", 121.10, 117.60, false],
+      ["Dec 19", 124.80, 120.40, false],
+      ["Mar 20", 108.60, 106.50, true],
+      ["Jun 20", 116.70, 113.90, false],
+      ["Sep 20", 121.80, 118.20, false],
+      ["Dec 20", 128.40, 123.80, false],
+      ["Mar 21", 132.00, 126.80, true],
+      ["Jun 21", 136.40, 130.40, false],
+      ["Sep 21", 138.80, 132.20, false],
+      ["Dec 21", 143.40, 135.60, false],
+      ["Mar 22", 140.50, 133.80, true],
+      ["Jun 22", 134.60, 129.00, false],
+      ["Sep 22", 130.40, 125.90, false],
+      ["Dec 22", 134.10, 128.60, false],
+      ["Mar 23", 137.70, 130.90, true],
+      ["Jun 23", 142.50, 134.60, false],
+      ["Sep 23", 144.60, 136.50, false],
+      ["Dec 23", 148.80, 139.70, false],
+      ["Mar 24", 152.10, 142.90, true],
+      ["Jun 24", 155.00, 144.80, false],
+      ["Sep 24", 160.10, 148.80, false],
+      ["Dec 24", 164.50, 152.20, false],
+      ["Mar 25", 166.50, 154.50, true],
+      ["Jun 25", 169.50, 156.80, false],
+      ["Sep 25", 172.50, 159.20, false],
+      ["Dec 25", 174.80, 161.50, false],
+      ["Mar 26", 170.95, 161.04, true]
+    ];
+
+    let selectedChartYears = 5;
+
+    function getChartData(years) {
+      const points = (years * 4) + 1;
+      const data = chartHistory.slice(-points);
+      const portfolioBase = data[0][1];
+      const benchmarkBase = data[0][2];
+      return data.map(point => [
+        point[0],
+        (point[1] / portfolioBase) * 100,
+        (point[2] / benchmarkBase) * 100,
+        point[3]
+      ]);
+    }
+
+    function drawPerformanceChart(years = selectedChartYears) {
+      const svg = document.getElementById("performanceChart");
+      const width = 760;
+      const height = 300;
+      const margin = { top: 20, right: 28, bottom: 38, left: 48 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const chartData = getChartData(years);
+      const values = chartData.flatMap(d => [d[1], d[2]]);
+      const min = Math.floor(Math.min(...values) - 1);
+      const max = Math.ceil(Math.max(...values) + 1);
+      const x = i => margin.left + (i / (chartData.length - 1)) * plotWidth;
+      const y = value => margin.top + ((max - value) / (max - min)) * plotHeight;
+      const line = index => chartData.map((d, i) => `${i === 0 ? "M" : "L"} ${x(i).toFixed(2)} ${y(d[index]).toFixed(2)}`).join(" ");
+      const gridStep = Math.ceil((max - min) / 4);
+      const gridValues = Array.from({ length: 5 }, (_, i) => min + (i * gridStep)).filter(v => v <= max);
+
+      svg.innerHTML = `
+        <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff"></rect>
+        ${gridValues.map(v => `<line class="grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${y(v)}" y2="${y(v)}"></line><text class="axis-label" x="10" y="${y(v) + 4}">${v}</text>`).join("")}
+        ${chartData.map((d, i) => d[3] ? `<text class="axis-label" x="${x(i) - 18}" y="${height - 12}">${d[0]}</text>` : "").join("")}
+        <path d="${line(2)}" fill="none" stroke="#17895b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="${line(1)}" fill="none" stroke="#005daa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+        ${chartData.map((d, i) => `<circle cx="${x(i)}" cy="${y(d[1])}" r="4" fill="#005daa"></circle>`).join("")}
+        ${chartData.map((d, i) => `<circle cx="${x(i)}" cy="${y(d[2])}" r="3.2" fill="#17895b"></circle>`).join("")}
+        <text class="axis-label" x="${width - 196}" y="18">${years} year view, rebased to 100</text>
+      `;
+    }
+
+    document.querySelectorAll(".range-button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".range-button").forEach(option => option.classList.remove("is-active"));
+        button.classList.add("is-active");
+        selectedChartYears = Number(button.dataset.years);
+        drawPerformanceChart(selectedChartYears);
+      });
+    });
+
+    drawPerformanceChart();
+    renderAllocation();
+    renderHoldings();
+  </script>
+  <script src="data/factsheets.js?v=20260713"></script>
+  <script src="factsheet.js?v=20260713-1"></script>
+</body>
+</html>

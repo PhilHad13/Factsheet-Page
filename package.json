@@ -1,0 +1,17 @@
+{
+  "name": "tam-online-factsheet-prototype",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check factsheet-prototype/factsheet.js && node --check scripts/import-factsheet-data.mjs",
+    "import-data": "node scripts/import-factsheet-data.mjs",
+    "preview": "python3 -m http.server 8765"
+  },
+  "dependencies": {
+    "@oai/artifact-tool": "2.8.22"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
