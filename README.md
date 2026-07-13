@@ -42,7 +42,7 @@ The source workbook filename must include its date in `DD.MM.YYYY` format (for e
 
 ## Previewing the website
 
-From the repository root, run `npm run preview`, then open `http://localhost:8765/factsheet-prototype/`.
+From the repository root, run `npm run preview`, then open `http://localhost:8765/`. The root page forwards to the factsheet automatically, matching the behaviour expected from GitHub Pages.
 
 ## Source limitation
 
