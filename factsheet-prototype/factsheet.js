@@ -205,8 +205,8 @@
           <td>${escapeHtml(holding.assetClass)}</td>
           <td>${formatPercent(holding.weight)}%</td>
         </tr>`).join("")}
-      <tr class="total"><td colspan="2">Top ${count} holdings as % of whole portfolio</td><td>${totalWeight.toFixed(2)}%</td></tr>
-      <tr class="total"><td colspan="2">Total number of holdings</td><td>${portfolio.totalHoldings}</td></tr>`;
+      <tr class="total"><td>Top ${count} holdings as % of whole portfolio</td><td></td><td>${totalWeight.toFixed(2)}%</td></tr>
+      <tr class="total"><td>Total number of holdings</td><td></td><td>${portfolio.totalHoldings}</td></tr>`;
   }
 
   function chartDataForYears(history, years) {

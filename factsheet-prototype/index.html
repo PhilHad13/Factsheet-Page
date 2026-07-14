@@ -40,15 +40,6 @@
       min-height: 100vh;
     }
 
-    .top-warning {
-      background: #ffffff;
-      color: #4d5961;
-      font-size: 0.88rem;
-      text-align: center;
-      padding: 0.65rem 1rem;
-      border-bottom: 1px solid var(--line);
-    }
-
     .masthead {
       background:
         linear-gradient(110deg, rgba(255,255,255,0.92), rgba(232,242,251,0.88)),
@@ -84,7 +75,6 @@
     .brand-title span {
       color: #4c555b;
       font-size: clamp(0.95rem, 1.5vw, 1.18rem);
-      text-transform: uppercase;
       letter-spacing: 0;
     }
 
@@ -106,23 +96,10 @@
       box-shadow: 0 10px 30px rgba(27, 47, 61, 0.08);
     }
 
-    .quick-selectors {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .selector-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      align-items: flex-start;
-      min-width: 220px;
-    }
-
-    .selector-field .selector-label {
-      margin-bottom: 0.6rem;
+    .quick-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
     }
 
     .selector-label {
@@ -192,7 +169,7 @@
       margin: 0 auto;
       padding: 0.9rem 1.25rem;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       justify-content: space-between;
       align-items: stretch;
       gap: 1.2rem;
@@ -268,6 +245,18 @@
     .button svg {
       width: 18px;
       height: 18px;
+    }
+
+    .download-section-body {
+      display: flex;
+      align-items: center;
+    }
+
+    .download-section .button {
+      background: var(--tam-blue);
+      border-color: var(--tam-blue);
+      color: #fff;
+      align-self: auto;
     }
 
     main {
@@ -918,7 +907,7 @@
     @media (max-width: 620px) {
       .issue-bar-inner {
         gap: 0.65rem;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .selected-portfolio > div {
@@ -934,6 +923,10 @@
       .selector-panel {
         padding-left: 1rem;
         padding-right: 1rem;
+      }
+
+      .quick-selector-grid {
+        grid-template-columns: 1fr;
       }
 
       .selector-options {
@@ -979,8 +972,17 @@
       }
 
       .holdings thead th:nth-child(2),
-      .holdings tbody tr:not(.total) td:nth-child(2) {
+      .holdings tbody td:nth-child(2) {
         display: none;
+      }
+
+      .holdings table {
+        table-layout: fixed;
+      }
+
+      .holdings thead th:last-child,
+      .holdings tbody td:last-child {
+        width: 90px;
       }
 
       .mini-table {
@@ -1006,25 +1008,23 @@
 </head>
 <body>
   <div class="page-shell">
-    <div class="top-warning">Financial promotion for professional investors and advisers only. Not to be relied upon by retail investors.</div>
-
     <header class="masthead">
       <div class="masthead-inner">
         <div class="brand-title">
           <strong>Model Portfolio Information Hub</strong>
-          <span id="hubSubtitle">View the Asset Allocation and Performance for each model. Download the latest factsheet.</span>
+          <span id="hubSubtitle">View the asset allocation and performance for each model. Download the latest factsheet.</span>
         </div>
       </div>
       <div class="selector-panel" aria-label="Portfolio selector">
-        <div class="selector-group quick-selectors">
-          <div class="selector-field">
+        <div class="quick-selector-grid">
+          <div class="selector-group">
             <div class="selector-label">Portfolio Type</div>
             <div class="selector-options" data-filter-group="type">
               <button class="choice is-active" type="button" data-value="Active" aria-pressed="true">Active</button>
               <button class="choice" type="button" data-value="Passive" aria-pressed="false">Passive</button>
             </div>
           </div>
-          <div class="selector-field">
+          <div class="selector-group">
             <div class="selector-label">Currency</div>
             <div class="selector-options" data-filter-group="currency">
               <button class="choice is-active" type="button" data-value="GBP" aria-pressed="true">GBP</button>
@@ -1056,14 +1056,6 @@
           <small>Information updated as at</small>
           <div id="dataAsOf">—</div>
         </div>
-        <a class="button" id="downloadFactsheet" href="#" aria-label="Download factsheet PDF" aria-disabled="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <path d="M7 10l5 5 5-5"></path>
-            <path d="M12 15V3"></path>
-          </svg>
-          Download factsheet .pdf
-        </a>
       </div>
     </div>
 
@@ -1250,6 +1242,22 @@
         </div>
       </section>
 
+      <section class="section grid-wide download-section">
+        <div class="section-header">
+          <h2>Download Factsheet</h2>
+        </div>
+        <div class="section-body download-section-body">
+          <a class="button" id="downloadFactsheet" href="#" aria-label="Download factsheet PDF" aria-disabled="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <path d="M7 10l5 5 5-5"></path>
+              <path d="M12 15V3"></path>
+            </svg>
+            Download factsheet .pdf
+          </a>
+        </div>
+      </section>
+
       <section class="section grid-wide">
         <div class="section-header">
           <h2>Important Information</h2>
@@ -1373,8 +1381,8 @@
             <td>${holding[2].toFixed(2)}%</td>
           </tr>
         `).join("")}
-        <tr class="total"><td colspan="2">Top ${count} holdings as % of whole portfolio</td><td>${totalWeight.toFixed(2)}%</td></tr>
-        <tr class="total"><td colspan="2">Total number of holdings</td><td>${holdingsData.length}</td></tr>
+        <tr class="total"><td>Top ${count} holdings as % of whole portfolio</td><td></td><td>${totalWeight.toFixed(2)}%</td></tr>
+        <tr class="total"><td>Total number of holdings</td><td></td><td>${holdingsData.length}</td></tr>
       `;
     }
 
@@ -1488,6 +1496,6 @@
     renderHoldings();
   </script>
   <script src="data/factsheets.js?v=20260713"></script>
-  <script src="factsheet.js?v=20260713-2"></script>
+  <script src="factsheet.js?v=20260714-1"></script>
 </body>
 </html>
