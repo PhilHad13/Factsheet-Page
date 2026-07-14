@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Model Portfolio Information Hub</title>
+  <title>TAM MPS Information Hub</title>
   <style>
     :root {
       --tam-blue: #005daa;
@@ -60,8 +60,10 @@
     .brand-title {
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 0.25rem;
       min-width: 0;
+      text-align: center;
     }
 
     .brand-title strong {
@@ -504,6 +506,10 @@
       font-size: 0.9rem;
     }
 
+    .mobile-performance-table {
+      display: none;
+    }
+
     .mini-table th,
     .mini-table td {
       padding: 0.65rem 0.45rem;
@@ -742,6 +748,10 @@
       align-items: center;
     }
 
+    .mobile-allocation-view {
+      display: none;
+    }
+
     .region-name {
       display: inline-flex;
       align-items: center;
@@ -948,6 +958,15 @@
         display: none;
       }
 
+      .allocation-controls,
+      .allocation-bars {
+        display: none;
+      }
+
+      .mobile-allocation-view {
+        display: grid;
+      }
+
       .allocation-row {
         grid-template-columns: 1fr;
         gap: 0.45rem;
@@ -992,16 +1011,56 @@
       .mini-table table {
         min-width: 500px;
       }
+
+      .performance-table .mini-table {
+        overflow-x: hidden;
+      }
+
+      .performance-table .desktop-performance-table {
+        display: none;
+      }
+
+      .performance-table .mobile-performance-table {
+        display: table;
+        min-width: 0;
+        font-size: 0.78rem;
+      }
+
+      .mobile-performance-table th,
+      .mobile-performance-table td {
+        padding: 0.55rem 0.25rem;
+      }
+
+      .mobile-performance-table th:first-child,
+      .mobile-performance-table td:first-child {
+        width: 25%;
+        text-align: left;
+      }
+
+      .mobile-performance-table tbody td:first-child {
+        background: #fff;
+        color: #2f3b43;
+        font-weight: 650;
+      }
     }
 
     @media (max-width: 520px) {
       .issue-bar-inner {
         grid-template-columns: 1fr;
-        justify-items: start;
+        justify-items: stretch;
+        text-align: center;
+      }
+
+      .issue-bar-inner .selected-portfolio {
+        align-items: center;
+      }
+
+      .issue-bar-inner .selected-portfolio > div {
+        font-size: 1.35rem;
       }
 
       .issue-date {
-        justify-self: start;
+        justify-self: stretch;
       }
     }
   </style>
@@ -1011,7 +1070,7 @@
     <header class="masthead">
       <div class="masthead-inner">
         <div class="brand-title">
-          <strong>Model Portfolio Information Hub</strong>
+          <strong>TAM MPS Information Hub</strong>
           <span id="hubSubtitle">View the asset allocation and performance for each model. Download the latest factsheet.</span>
         </div>
       </div>
@@ -1121,7 +1180,7 @@
           <div class="performance-table">
             <div class="mini-table">
               <h3>Cumulative Return</h3>
-              <table>
+              <table class="desktop-performance-table">
                 <thead id="cumulativeHead">
                   <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Inception</th></tr>
                 </thead>
@@ -1131,10 +1190,16 @@
                   <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+2.73</td><td>+2.55</td><td>+6.23</td><td>+14.05</td></tr>
                 </tbody>
               </table>
+              <table class="mobile-performance-table">
+                <thead id="cumulativeMobileHead">
+                  <tr><th>Period</th><th>Portfolio</th><th>Benchmark</th><th>Difference</th></tr>
+                </thead>
+                <tbody id="cumulativeMobileRows"></tbody>
+              </table>
             </div>
             <div class="mini-table">
               <h3>Annualised Returns</h3>
-              <table>
+              <table class="desktop-performance-table">
                 <thead id="annualisedHead">
                   <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Volatility</th></tr>
                 </thead>
@@ -1144,10 +1209,16 @@
                   <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+0.77</td><td>+0.42</td><td>+0.39</td><td>+0.45</td></tr>
                 </tbody>
               </table>
+              <table class="mobile-performance-table">
+                <thead id="annualisedMobileHead">
+                  <tr><th>Period</th><th>Portfolio</th><th>Benchmark</th><th>Difference</th></tr>
+                </thead>
+                <tbody id="annualisedMobileRows"></tbody>
+              </table>
             </div>
             <div class="mini-table">
               <h3>Calendar Year Returns</h3>
-              <table>
+              <table class="desktop-performance-table">
                 <thead id="calendarHead">
                   <tr><th></th><th>2022</th><th>2023</th><th>2024</th><th>2025</th><th>2026 YTD</th></tr>
                 </thead>
@@ -1156,6 +1227,12 @@
                   <tr class="benchmark-row"><th>Benchmark</th><td>-5.16</td><td>9.43</td><td>7.50</td><td>11.80</td><td>0.30</td></tr>
                   <tr class="difference-row"><th>Difference</th><td>-1.32</td><td>+1.53</td><td>+0.71</td><td>+0.92</td><td>-0.20</td></tr>
                 </tbody>
+              </table>
+              <table class="mobile-performance-table">
+                <thead id="calendarMobileHead">
+                  <tr><th>Period</th><th>Portfolio</th><th>Benchmark</th><th>Difference</th></tr>
+                </thead>
+                <tbody id="calendarMobileRows"></tbody>
               </table>
             </div>
           </div>
@@ -1189,6 +1266,26 @@
                 <span class="variance-heading"><span></span><span>vs Benchmark</span></span>
               </div>
               <div id="allocationRows"></div>
+            </div>
+            <div class="mobile-allocation-view donut-layout">
+              <svg id="mobileAllocationChart" viewBox="0 0 180 180" width="180" height="180" aria-label="Asset allocation donut chart">
+                <circle cx="90" cy="90" r="62" fill="none" stroke="#386a9f" stroke-width="34" stroke-dasharray="187 390" transform="rotate(-90 90 90)"></circle>
+                <circle cx="90" cy="90" r="62" fill="none" stroke="#6e95c6" stroke-width="34" stroke-dasharray="90 390" stroke-dashoffset="-187" transform="rotate(-90 90 90)"></circle>
+                <circle cx="90" cy="90" r="62" fill="none" stroke="#98b1d7" stroke-width="34" stroke-dasharray="98 390" stroke-dashoffset="-277" transform="rotate(-90 90 90)"></circle>
+                <circle cx="90" cy="90" r="62" fill="none" stroke="#b9c7df" stroke-width="34" stroke-dasharray="16 390" stroke-dashoffset="-375" transform="rotate(-90 90 90)"></circle>
+                <circle cx="90" cy="90" r="37" fill="#ffffff"></circle>
+              </svg>
+              <table class="region-table">
+                <thead>
+                  <tr><th>Asset Class</th><th aria-label="Portfolio allocation"></th></tr>
+                </thead>
+                <tbody id="mobileAllocationRows">
+                  <tr><td><span class="region-name"><i class="dot" style="background:#386a9f;"></i>Equities</span></td><td>48%</td></tr>
+                  <tr><td><span class="region-name"><i class="dot" style="background:#6e95c6;"></i>Bonds</span></td><td>23%</td></tr>
+                  <tr><td><span class="region-name"><i class="dot" style="background:#98b1d7;"></i>Alternatives</span></td><td>25%</td></tr>
+                  <tr><td><span class="region-name"><i class="dot" style="background:#b9c7df;"></i>Cash</span></td><td>4%</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -1287,7 +1384,7 @@
     function updateSelectedPortfolio() {
       const portfolioName = `${selection.type} ${selection.risk} ${selection.currency}`;
       document.getElementById("selectedPortfolio").textContent = portfolioName;
-      document.title = `Model Portfolio Information Hub - ${portfolioName}`;
+      document.title = `TAM MPS Information Hub - ${portfolioName}`;
     }
 
     document.querySelectorAll(".selector-options").forEach(group => {
@@ -1496,6 +1593,6 @@
     renderHoldings();
   </script>
   <script src="data/factsheets.js?v=20260713"></script>
-  <script src="factsheet.js?v=20260714-1"></script>
+  <script src="factsheet.js?v=20260714-5"></script>
 </body>
 </html>

@@ -95,7 +95,7 @@
     document.getElementById("selectedPortfolio").textContent = portfolio.name;
     document.getElementById("portfolioLegend").textContent = portfolio.name;
     document.getElementById("dataAsOf").textContent = formatDate(dataset.meta.dataAsOf);
-    document.title = `Model Portfolio Information Hub - ${portfolio.name}`;
+    document.title = `TAM MPS Information Hub - ${portfolio.name}`;
   }
 
   function renderObjective(portfolio) {
@@ -127,7 +127,7 @@
       .join("");
   }
 
-  function renderPerformanceTable(section, headId, rowsId) {
+  function renderPerformanceTable(section, headId, rowsId, mobileRowsId, reverseMobile = false) {
     document.getElementById(headId).innerHTML = `<tr><th></th>${section.columns
       .map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr>`;
     const difference = Object.fromEntries(section.columns.map((column) => {
@@ -153,12 +153,21 @@
       row("Benchmark", section.benchmark, "benchmark-row"),
       row("Difference", difference, "difference-row", true),
     ].join("");
+
+    const mobileColumns = reverseMobile ? [...section.columns].reverse() : section.columns;
+    document.getElementById(mobileRowsId).innerHTML = mobileColumns.map((column) => `
+      <tr>
+        <td>${escapeHtml(column)}</td>
+        <td class="${performanceClass(section.portfolio[column])}">${performanceValue(section.portfolio[column])}</td>
+        <td class="${performanceClass(section.benchmark[column])}">${performanceValue(section.benchmark[column])}</td>
+        <td class="${performanceClass(difference[column])}">${performanceValue(difference[column], true)}</td>
+      </tr>`).join("");
   }
 
   function renderPerformance(portfolio) {
-    renderPerformanceTable(portfolio.performance.cumulative, "cumulativeHead", "cumulativeRows");
-    renderPerformanceTable(portfolio.performance.annualised, "annualisedHead", "annualisedRows");
-    renderPerformanceTable(portfolio.performance.calendar, "calendarHead", "calendarRows");
+    renderPerformanceTable(portfolio.performance.cumulative, "cumulativeHead", "cumulativeRows", "cumulativeMobileRows");
+    renderPerformanceTable(portfolio.performance.annualised, "annualisedHead", "annualisedRows", "annualisedMobileRows");
+    renderPerformanceTable(portfolio.performance.calendar, "calendarHead", "calendarRows", "calendarMobileRows", true);
   }
 
   function renderAllocation(portfolio, view = allocationView) {
@@ -174,6 +183,23 @@
           <div class="variance-cell"><span class="allocation-diff ${hasDifference ? direction : ""}">${hasDifference ? `${formatPercent(row.diff, { signed: true, decimals: 1 })}%` : "—"}</span><div class="variance-track"><div class="variance-fill ${hasDifference ? direction : ""}" style="--variance:${varianceWidth}%;"></div></div></div>
         </div>`;
     }).join("");
+
+    const mainAssetClasses = ["Equities", "Bonds", "Alternatives", "Cash"];
+    const mobileRows = portfolio.allocation.summary.filter((row) => mainAssetClasses.includes(row.name));
+    const circumference = 2 * Math.PI * 62;
+    let offset = 0;
+    const circles = mobileRows.map((row, index) => {
+      const length = circumference * (row.allocation / 100);
+      const circle = `<circle cx="90" cy="90" r="62" fill="none" stroke="${regionColours[index]}" stroke-width="34" stroke-dasharray="${length.toFixed(2)} ${circumference.toFixed(2)}" stroke-dashoffset="-${offset.toFixed(2)}" transform="rotate(-90 90 90)"></circle>`;
+      offset += length;
+      return circle;
+    }).join("");
+    document.getElementById("mobileAllocationChart").innerHTML = `${circles}<circle cx="90" cy="90" r="37" fill="#ffffff"></circle>`;
+    document.getElementById("mobileAllocationRows").innerHTML = mobileRows.map((row, index) => `
+      <tr>
+        <td><span class="region-name"><i class="dot" style="background:${regionColours[index]};"></i>${escapeHtml(row.name)}</span></td>
+        <td>${formatPercent(row.allocation, { decimals: 1 })}%</td>
+      </tr>`).join("");
   }
 
   function renderRegions(portfolio) {
