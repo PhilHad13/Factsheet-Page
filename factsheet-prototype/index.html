@@ -531,7 +531,7 @@
 
     .mini-table tr.portfolio-row th,
     .mini-table tr.portfolio-row td {
-      background: var(--soft-blue);
+      background: #fff;
       color: var(--tam-blue);
       font-weight: 850;
     }
@@ -539,7 +539,7 @@
     .mini-table tr.benchmark-row th,
     .mini-table tr.benchmark-row td {
       background: #fff;
-      color: #2f3b43;
+      color: var(--amber);
       font-weight: 650;
     }
 
@@ -548,6 +548,34 @@
       background: #eef3f6;
       color: #34444f;
       font-weight: 800;
+    }
+
+    .performance-table .mini-table .desktop-performance-table tr.portfolio-row th,
+    .performance-table .mini-table .desktop-performance-table tr.portfolio-row td {
+      color: var(--tam-blue);
+    }
+
+    .performance-table .mini-table .desktop-performance-table tr.benchmark-row th,
+    .performance-table .mini-table .desktop-performance-table tr.benchmark-row td {
+      color: var(--amber);
+    }
+
+    .performance-table .mini-table .mobile-performance-table th:nth-child(2),
+    .performance-table .mini-table .mobile-performance-table td:nth-child(2) {
+      color: var(--tam-blue);
+    }
+
+    .performance-table .mini-table .mobile-performance-table th:nth-child(3),
+    .performance-table .mini-table .mobile-performance-table td:nth-child(3) {
+      color: var(--amber);
+    }
+
+    .performance-table .mini-table .mobile-performance-table tbody td {
+      background: #fff;
+    }
+
+    .performance-table .mini-table .mobile-performance-table tbody td:nth-child(4) {
+      background: #eef3f6;
     }
 
     .mini-table tr td.performance-positive {
@@ -1587,7 +1615,7 @@
     renderAllocation();
     renderHoldings();
   </script>
-  <script src="data/factsheets.js?v=20260713"></script>
-  <script src="factsheet.js?v=20260720-2"></script>
+  <script src="data/factsheets.js?v=20260720-1"></script>
+  <script src="factsheet.js?v=20260720-3"></script>
 </body>
 </html>

@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check factsheet-prototype/factsheet.js && node --check scripts/import-factsheet-data.mjs",
-    "import-data": "node scripts/import-factsheet-data.mjs",
+    "check": "node --check factsheet-prototype/factsheet.js && node --check scripts/import-factsheet-data.mjs && node --check scripts/import-standard-factsheet-data.mjs",
+    "import-data": "node scripts/import-standard-factsheet-data.mjs",
+    "import-legacy-data": "node scripts/import-factsheet-data.mjs",
     "preview": "python3 -m http.server 8765"
   },
   "dependencies": {

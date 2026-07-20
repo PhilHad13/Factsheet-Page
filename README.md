@@ -7,18 +7,15 @@ This repository contains a live web factsheet prototype backed by the TAM master
 - `factsheet-prototype/index.html` - the web factsheet page.
 - `factsheet-prototype/data/factsheets.js` - generated website data for all available portfolios.
 - `factsheet-prototype/factsheet.js` - selector, table, chart, allocation, regional exposure, and holdings rendering.
-- `scripts/import-factsheet-data.mjs` - repeatable mapping from the TAM `.xlsm` workbook to website data.
+- `scripts/import-standard-factsheet-data.mjs` - repeatable mapping from the standard factsheet `.xlsx` workbook to website data.
+- `scripts/import-factsheet-data.mjs` - retained importer for the original legacy `.xlsm` workbook.
 - `outputs/factsheet_template/dynamic_factsheet_data_template.xlsx` - starter Excel data template retained for reference.
 
 ## Current mapping
 
-The page currently maps 10 portfolios from `TAM Factsheet Data 30.06.2026.xlsm`:
+The page maps the portfolios present in the standard factsheet workbook. Each portfolio's objective, portfolio information, performance, allocation, regional exposure, and holdings are read from the matching workbook sheets.
 
-- Active GBP and Active EUR
-- Defensive 20, Cautious 40, Balanced 60, Growth 80, and High Growth 100
-- Model and benchmark performance, monthly chart history, allocation, regional exposure, duration, yield, OCF, and top holdings
-
-The latest monthly performance period present in that workbook ends on 30 April 2026, which is used as the website's data-as-of date.
+The workbook report date is used as the website's data-as-of date.
 
 ## Refreshing the website data
 
@@ -31,19 +28,15 @@ npm install
 Run the importer with the master workbook and desired output path:
 
 ```sh
-node scripts/import-factsheet-data.mjs \
-  "/path/to/TAM Factsheet Data 30.06.2026.xlsm" \
+node scripts/import-standard-factsheet-data.mjs \
+  "/path/to/dynamic_factsheet_data_30_Jun_2026.xlsx" \
   "factsheet-prototype/data/factsheets.js"
 ```
 
 The importer validates portfolio coverage, allocation totals, regional totals, monthly series completeness, and ranked holdings. The browser only needs the generated JavaScript data file; it does not need Excel or macro support.
 
-The source workbook filename must include its date in `DD.MM.YYYY` format (for example, `TAM Factsheet Data 30.06.2026.xlsm`). This date is recorded in the generated data for traceability.
+The report date is read from the workbook rather than inferred from its filename.
 
 ## Previewing the website
 
 From the repository root, run `npm run preview`, then open `http://localhost:8765/`. The root page forwards to the factsheet automatically, matching the behaviour expected from GitHub Pages.
-
-## Source limitation
-
-The workbook's `Performance Benchmark` sheet currently duplicates `Performance Model`. The importer therefore calculates available 1-, 3-, and 5-year benchmark returns from `Graph Data Benchmark`. Ten-year and inception benchmark figures display as unavailable until distinct benchmark values are supplied.

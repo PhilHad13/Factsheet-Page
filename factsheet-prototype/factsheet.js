@@ -99,26 +99,19 @@
   }
 
   function renderObjective(portfolio) {
-    const nonEquity = 100 - portfolio.targetEquity;
-    const allocationSentence = nonEquity > 0
-      ? `The portfolio will typically comprise ${portfolio.targetEquity}% equity and ${nonEquity}% non-equity, although weightings may deviate within the permitted investment parameters.`
-      : "The portfolio is designed as an equity-focused strategy, although cash and diversifying assets may be held within the permitted investment parameters.";
-    document.getElementById("objectiveText").innerHTML = `
-      <p>This portfolio comprises diversified investment vehicles, including unit trusts, mutual funds and exchange-traded funds (ETFs), whose managers aim to outperform their respective markets.</p>
-      <p>${escapeHtml(portfolio.name)} seeks to generate capital growth over the medium term, with the aim of riding out short-term fluctuations in value.</p>
-      <p>${escapeHtml(allocationSentence)}</p>
-    `;
+    const paragraphs = String(portfolio.objective ?? "")
+      .split(/\n\s*\n/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean);
+    document.getElementById("objectiveText").innerHTML = paragraphs.length
+      ? paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")
+      : "<p>Objective information is not available.</p>";
   }
 
   function renderPortfolioInformation(portfolio) {
-    const rows = [
-      ["Portfolio Benchmark", portfolio.benchmarkName],
-      ["Inception Date", "Not provided in source workbook"],
-      ["Accessibility", "Direct, Pension, Life Bond, Trust"],
-      ["Suggested Investment Horizon", "5 years+"],
-      ["Minimum Investment", `${portfolio.currency} 7,500`],
-      ["Underlying Fund OCF", `${formatPercent(portfolio.ocf, { decimals: 2 })}%`],
-    ];
+    const rows = Array.isArray(portfolio.information)
+      ? portfolio.information.map((row) => [row.label, row.value])
+      : [];
     document.getElementById("portfolioInfoRows").innerHTML = rows
       .map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`)
       .join("");
