@@ -111,7 +111,6 @@
   }
 
   function renderPortfolioInformation(portfolio) {
-    const bondMetricsApplicable = portfolio.targetEquity < 100;
     const rows = [
       ["Portfolio Benchmark", portfolio.benchmarkName],
       ["Inception Date", "Not provided in source workbook"],
@@ -119,18 +118,25 @@
       ["Suggested Investment Horizon", "5 years+"],
       ["Minimum Investment", `${portfolio.currency} 7,500`],
       ["Underlying Fund OCF", `${formatPercent(portfolio.ocf, { decimals: 2 })}%`],
-      ["Portfolio Duration", !bondMetricsApplicable || portfolio.duration === null ? "Not applicable" : `${portfolio.duration.toFixed(2)} years`],
-      ["Portfolio Yield", !bondMetricsApplicable || portfolio.yield === null ? "Not applicable" : `${formatPercent(portfolio.yield, { decimals: 2 })}%`],
     ];
     document.getElementById("portfolioInfoRows").innerHTML = rows
       .map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`)
       .join("");
   }
 
+  function cumulativeHistoryReturn(history, months, field) {
+    if (!Array.isArray(history) || history.length <= months) return null;
+    const latest = history.at(-1)?.[field];
+    const starting = history.at(-(months + 1))?.[field];
+    if (!Number.isFinite(latest) || !Number.isFinite(starting) || starting === 0) return null;
+    return Number((((latest / starting) - 1) * 100).toFixed(2));
+  }
+
   function renderPerformanceTable(section, headId, rowsId, mobileRowsId, reverseMobile = false) {
-    document.getElementById(headId).innerHTML = `<tr><th></th>${section.columns
+    const visibleColumns = section.columns.filter((column) => column !== "10 Year" && column !== "Inception");
+    document.getElementById(headId).innerHTML = `<tr><th></th>${visibleColumns
       .map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr>`;
-    const difference = Object.fromEntries(section.columns.map((column) => {
+    const difference = Object.fromEntries(visibleColumns.map((column) => {
       const portfolioValue = section.portfolio[column];
       const benchmarkValue = section.benchmark[column];
       return [column, portfolioValue === null || benchmarkValue === null
@@ -146,7 +152,7 @@
     const row = (label, values, className, signed = false) => `
       <tr class="${className}">
         <th>${label}</th>
-        ${section.columns.map((column) => `<td class="${performanceClass(values[column])}">${performanceValue(values[column], signed)}</td>`).join("")}
+        ${visibleColumns.map((column) => `<td class="${performanceClass(values[column])}">${performanceValue(values[column], signed)}</td>`).join("")}
       </tr>`;
     document.getElementById(rowsId).innerHTML = [
       row("Portfolio", section.portfolio, "portfolio-row"),
@@ -154,7 +160,7 @@
       row("Difference", difference, "difference-row", true),
     ].join("");
 
-    const mobileColumns = reverseMobile ? [...section.columns].reverse() : section.columns;
+    const mobileColumns = reverseMobile ? [...visibleColumns].reverse() : visibleColumns;
     document.getElementById(mobileRowsId).innerHTML = mobileColumns.map((column) => `
       <tr>
         <td>${escapeHtml(column)}</td>
@@ -165,7 +171,19 @@
   }
 
   function renderPerformance(portfolio) {
-    renderPerformanceTable(portfolio.performance.cumulative, "cumulativeHead", "cumulativeRows", "cumulativeMobileRows");
+    const cumulative = portfolio.performance.cumulative;
+    const cumulativeWithSixMonths = cumulative.columns.includes("6 Month") ? cumulative : {
+      columns: ["6 Month", ...cumulative.columns],
+      portfolio: {
+        "6 Month": cumulativeHistoryReturn(portfolio.performance.history, 6, "portfolio"),
+        ...cumulative.portfolio,
+      },
+      benchmark: {
+        "6 Month": cumulativeHistoryReturn(portfolio.performance.history, 6, "benchmark"),
+        ...cumulative.benchmark,
+      },
+    };
+    renderPerformanceTable(cumulativeWithSixMonths, "cumulativeHead", "cumulativeRows", "cumulativeMobileRows");
     renderPerformanceTable(portfolio.performance.annualised, "annualisedHead", "annualisedRows", "annualisedMobileRows");
     renderPerformanceTable(portfolio.performance.calendar, "calendarHead", "calendarRows", "calendarMobileRows", true);
   }

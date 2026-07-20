@@ -1160,12 +1160,11 @@
         <div class="section-body performance-grid">
           <div class="chart-panel">
             <div class="chart-toolbar">
-              <div class="chart-title">Performance Comparison</div>
+          <div class="chart-title">Performance Comparison</div>
               <div class="range-options" aria-label="Performance chart period">
                 <button class="range-button" type="button" data-years="1" aria-pressed="false">1 Year</button>
                 <button class="range-button" type="button" data-years="3" aria-pressed="false">3 Year</button>
                 <button class="range-button is-active" type="button" data-years="5" aria-pressed="true">5 Year</button>
-                <button class="range-button" type="button" data-years="10" aria-pressed="false">10 Year</button>
               </div>
             </div>
             <div class="chart-wrap">
@@ -1182,12 +1181,12 @@
               <h3>Cumulative Return</h3>
               <table class="desktop-performance-table">
                 <thead id="cumulativeHead">
-                  <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Inception</th></tr>
+                  <tr><th></th><th>6 Month</th><th>1 Year</th><th>3 Year</th><th>5 Year</th></tr>
                 </thead>
                 <tbody id="cumulativeRows">
-                  <tr class="portfolio-row"><th>Portfolio</th><td>13.73</td><td>28.23</td><td>29.55</td><td>67.23</td><td>146.05</td></tr>
-                  <tr class="benchmark-row"><th>Benchmark</th><td>12.00</td><td>25.50</td><td>27.00</td><td>61.00</td><td>132.00</td></tr>
-                  <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+2.73</td><td>+2.55</td><td>+6.23</td><td>+14.05</td></tr>
+                  <tr class="portfolio-row"><th>Portfolio</th><td>—</td><td>13.73</td><td>28.23</td><td>29.55</td></tr>
+                  <tr class="benchmark-row"><th>Benchmark</th><td>—</td><td>12.00</td><td>25.50</td><td>27.00</td></tr>
+                  <tr class="difference-row"><th>Difference</th><td>—</td><td>+1.73</td><td>+2.73</td><td>+2.55</td></tr>
                 </tbody>
               </table>
               <table class="mobile-performance-table">
@@ -1201,12 +1200,12 @@
               <h3>Annualised Returns</h3>
               <table class="desktop-performance-table">
                 <thead id="annualisedHead">
-                  <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>10 Year</th><th>Volatility</th></tr>
+                  <tr><th></th><th>1 Year</th><th>3 Year</th><th>5 Year</th><th>Volatility</th></tr>
                 </thead>
                 <tbody id="annualisedRows">
-                  <tr class="portfolio-row"><th>Portfolio</th><td>13.73</td><td>8.64</td><td>5.32</td><td>5.27</td><td>6.85</td></tr>
-                  <tr class="benchmark-row"><th>Benchmark</th><td>12.00</td><td>7.87</td><td>4.90</td><td>4.88</td><td>6.40</td></tr>
-                  <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+0.77</td><td>+0.42</td><td>+0.39</td><td>+0.45</td></tr>
+                  <tr class="portfolio-row"><th>Portfolio</th><td>13.73</td><td>8.64</td><td>5.32</td><td>6.85</td></tr>
+                  <tr class="benchmark-row"><th>Benchmark</th><td>12.00</td><td>7.87</td><td>4.90</td><td>6.40</td></tr>
+                  <tr class="difference-row"><th>Difference</th><td>+1.73</td><td>+0.77</td><td>+0.42</td><td>+0.45</td></tr>
                 </tbody>
               </table>
               <table class="mobile-performance-table">
@@ -1253,10 +1252,6 @@
         <section class="composition-panel">
           <div class="section-header">
             <h2>Asset Allocation</h2>
-            <div class="allocation-controls" aria-label="Asset allocation view">
-              <button class="allocation-button is-active" type="button" data-allocation-view="summary" aria-pressed="true">Summary</button>
-              <button class="allocation-button" type="button" data-allocation-view="expanded" aria-pressed="false">Expanded</button>
-            </div>
           </div>
           <div class="section-body">
             <div class="allocation-bars">
@@ -1593,6 +1588,6 @@
     renderHoldings();
   </script>
   <script src="data/factsheets.js?v=20260713"></script>
-  <script src="factsheet.js?v=20260714-5"></script>
+  <script src="factsheet.js?v=20260720-2"></script>
 </body>
 </html>
