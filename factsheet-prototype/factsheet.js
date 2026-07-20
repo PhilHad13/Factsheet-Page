@@ -181,6 +181,101 @@
     renderPerformanceTable(portfolio.performance.calendar, "calendarHead", "calendarRows", "calendarMobileRows", true);
   }
 
+  function calculateDrawdown(history, field) {
+    let runningPeak = history[0][field];
+    let runningPeakIndex = 0;
+    let maximumDrawdown = 0;
+    let peakIndex = 0;
+    let troughIndex = 0;
+
+    history.forEach((point, index) => {
+      const value = point[field];
+      if (value > runningPeak) {
+        runningPeak = value;
+        runningPeakIndex = index;
+      }
+      const drawdown = ((value / runningPeak) - 1) * 100;
+      if (drawdown < maximumDrawdown) {
+        maximumDrawdown = drawdown;
+        peakIndex = runningPeakIndex;
+        troughIndex = index;
+      }
+    });
+
+    const peakValue = history[peakIndex][field];
+    const recoveryIndex = history.findIndex((point, index) => (
+      index > troughIndex && point[field] >= peakValue
+    ));
+    const latestPeak = Math.max(...history.map((point) => point[field]));
+    const currentDrawdown = ((history.at(-1)[field] / latestPeak) - 1) * 100;
+
+    return {
+      maximumDrawdown: Number(maximumDrawdown.toFixed(2)),
+      peakDate: history[peakIndex].date,
+      troughDate: history[troughIndex].date,
+      monthsToTrough: troughIndex - peakIndex,
+      recoveryDate: recoveryIndex >= 0 ? history[recoveryIndex].date : null,
+      monthsToRecovery: recoveryIndex >= 0 ? recoveryIndex - troughIndex : null,
+      currentDrawdown: Number(currentDrawdown.toFixed(2)),
+    };
+  }
+
+  function renderDrawdown(portfolio) {
+    const portfolioStats = calculateDrawdown(portfolio.performance.history, "portfolio");
+    const benchmarkStats = calculateDrawdown(portfolio.performance.history, "benchmark");
+    const valueOrDash = (value) => value === null || value === undefined ? "—" : value;
+    const rows = [
+      ["Maximum drawdown", `${formatPercent(portfolioStats.maximumDrawdown)}%`, `${formatPercent(benchmarkStats.maximumDrawdown)}%`],
+      ["Peak date", formatDate(portfolioStats.peakDate), formatDate(benchmarkStats.peakDate)],
+      ["Trough date", formatDate(portfolioStats.troughDate), formatDate(benchmarkStats.troughDate)],
+      ["Months to trough", portfolioStats.monthsToTrough, benchmarkStats.monthsToTrough],
+      ["Recovery date", portfolioStats.recoveryDate ? formatDate(portfolioStats.recoveryDate) : "Not yet recovered", benchmarkStats.recoveryDate ? formatDate(benchmarkStats.recoveryDate) : "Not yet recovered"],
+      ["Months to recovery", valueOrDash(portfolioStats.monthsToRecovery), valueOrDash(benchmarkStats.monthsToRecovery)],
+      ["Current drawdown", `${formatPercent(portfolioStats.currentDrawdown)}%`, `${formatPercent(benchmarkStats.currentDrawdown)}%`],
+    ];
+
+    document.getElementById("drawdownRows").innerHTML = rows
+      .map(([label, portfolioValue, benchmarkValue]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(portfolioValue)}</td><td>${escapeHtml(benchmarkValue)}</td></tr>`)
+      .join("");
+  }
+
+  function calculateRiskStatistics(history, field) {
+    const monthlyReturns = history.slice(1).map((point, index) => (
+      ((point[field] / history[index][field]) - 1) * 100
+    ));
+    const mean = monthlyReturns.reduce((sum, value) => sum + value, 0) / monthlyReturns.length;
+    const variance = monthlyReturns.reduce((sum, value) => sum + (value - mean) ** 2, 0)
+      / Math.max(monthlyReturns.length - 1, 1);
+    const downsideVariance = monthlyReturns.reduce((sum, value) => (
+      sum + Math.min(value, 0) ** 2
+    ), 0) / monthlyReturns.length;
+
+    return {
+      annualisedVolatility: Math.sqrt(variance) * Math.sqrt(12),
+      bestMonth: Math.max(...monthlyReturns),
+      worstMonth: Math.min(...monthlyReturns),
+      positiveMonths: (monthlyReturns.filter((value) => value > 0).length / monthlyReturns.length) * 100,
+      downsideVolatility: Math.sqrt(downsideVariance) * Math.sqrt(12),
+    };
+  }
+
+  function renderRiskStatistics(portfolio) {
+    const portfolioStats = calculateRiskStatistics(portfolio.performance.history, "portfolio");
+    const benchmarkStats = calculateRiskStatistics(portfolio.performance.history, "benchmark");
+    const percentage = (value, decimals = 2) => `${formatPercent(value, { decimals })}%`;
+    const rows = [
+      ["Annualised volatility", percentage(portfolioStats.annualisedVolatility), percentage(benchmarkStats.annualisedVolatility)],
+      ["Best month", percentage(portfolioStats.bestMonth), percentage(benchmarkStats.bestMonth)],
+      ["Worst month", percentage(portfolioStats.worstMonth), percentage(benchmarkStats.worstMonth)],
+      ["Positive months", percentage(portfolioStats.positiveMonths, 1), percentage(benchmarkStats.positiveMonths, 1)],
+      ["Downside volatility", percentage(portfolioStats.downsideVolatility), percentage(benchmarkStats.downsideVolatility)],
+    ];
+
+    document.getElementById("riskStatisticRows").innerHTML = rows
+      .map(([label, portfolioValue, benchmarkValue]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(portfolioValue)}</td><td>${escapeHtml(benchmarkValue)}</td></tr>`)
+      .join("");
+  }
+
   function renderAllocation(portfolio, view = allocationView) {
     const rows = portfolio.allocation[view];
     document.getElementById("allocationRows").innerHTML = rows.map((row) => {
@@ -279,18 +374,12 @@
     const gridStep = Math.max(1, Math.ceil((max - min) / 4));
     const gridValues = Array.from({ length: 6 }, (_, index) => min + index * gridStep).filter((value) => value <= max);
     const tickEvery = Math.max(1, Math.round(chartData.length / Math.min(5, chartData.length)));
-    const availableYears = (new Date(`${chartData.at(-1).date}T00:00:00Z`) - new Date(`${chartData[0].date}T00:00:00Z`)) / 31557600000;
-    const viewLabel = availableYears + 0.05 < years
-      ? `${availableYears.toFixed(1)} years available, rebased to 100`
-      : `${years} year view, rebased to 100`;
-
     svg.innerHTML = `
       <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff"></rect>
       ${gridValues.map((value) => `<line class="grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${y(value)}" y2="${y(value)}"></line><text class="axis-label" x="10" y="${y(value) + 4}">${value}</text>`).join("")}
       ${chartData.map((point, index) => index % tickEvery === 0 || index === chartData.length - 1 ? `<text class="axis-label" x="${x(index) - 18}" y="${height - 12}">${escapeHtml(point.label)}</text>` : "").join("")}
       <path d="${line("benchmark")}" fill="none" stroke="#c77700" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-      <path d="${line("portfolio")}" fill="none" stroke="#005daa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
-      <text class="axis-label" x="${width - 226}" y="18">${viewLabel}</text>`;
+      <path d="${line("portfolio")}" fill="none" stroke="#005daa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>`;
   }
 
   function renderPortfolio() {
@@ -301,6 +390,8 @@
     renderObjective(portfolio);
     renderPortfolioInformation(portfolio);
     renderPerformance(portfolio);
+    renderDrawdown(portfolio);
+    renderRiskStatistics(portfolio);
     syncChartRangeButtons(portfolio);
     renderAllocation(portfolio);
     renderRegions(portfolio);

@@ -451,8 +451,38 @@
       grid-column: 1 / -1;
     }
 
+    .risk-statistics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .risk-analysis-table table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 0.9rem;
+    }
+
+    .risk-analysis-table th:first-child,
+    .risk-analysis-table td:first-child {
+      width: 40%;
+      text-align: left;
+    }
+
+    .risk-analysis-table th:nth-child(2),
+    .risk-analysis-table td:nth-child(2) {
+      color: var(--tam-blue);
+    }
+
+    .risk-analysis-table th:nth-child(3),
+    .risk-analysis-table td:nth-child(3) {
+      color: var(--amber);
+    }
+
     .performance-basis {
       grid-column: 1 / -1;
+      margin-top: 0.8rem;
       padding: 0.85rem 1rem;
       border-left: 4px solid var(--tam-blue);
       border-radius: 0 6px 6px 0;
@@ -932,7 +962,8 @@
       }
 
       .performance-grid,
-      .split-grid {
+      .split-grid,
+      .risk-statistics-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1042,6 +1073,21 @@
 
       .performance-table .mini-table {
         overflow-x: hidden;
+      }
+
+      .risk-analysis-table {
+        overflow-x: hidden;
+      }
+
+      .risk-analysis-table table {
+        min-width: 0;
+        font-size: 0.78rem;
+      }
+
+      .risk-analysis-table th,
+      .risk-analysis-table td {
+        padding: 0.55rem 0.25rem;
+        overflow-wrap: anywhere;
       }
 
       .performance-table .desktop-performance-table {
@@ -1362,6 +1408,49 @@
         </div>
       </section>
 
+      <section class="section grid-wide risk-statistics-section">
+        <div class="section-header">
+          <h2>Risk Statistics</h2>
+        </div>
+        <div class="section-body">
+          <div class="risk-statistics-grid">
+            <div class="risk-analysis-table mini-table">
+              <h3>Drawdown Analysis</h3>
+              <table aria-label="Drawdown analysis comparing portfolio and benchmark">
+                <thead>
+                  <tr><th>Measure</th><th>Portfolio</th><th>Benchmark</th></tr>
+                </thead>
+                <tbody id="drawdownRows">
+                  <tr><th>Maximum drawdown</th><td>—</td><td>—</td></tr>
+                  <tr><th>Peak date</th><td>—</td><td>—</td></tr>
+                  <tr><th>Trough date</th><td>—</td><td>—</td></tr>
+                  <tr><th>Months to trough</th><td>—</td><td>—</td></tr>
+                  <tr><th>Recovery date</th><td>—</td><td>—</td></tr>
+                  <tr><th>Months to recovery</th><td>—</td><td>—</td></tr>
+                  <tr><th>Current drawdown</th><td>—</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="risk-analysis-table mini-table">
+              <h3>Monthly Risk Statistics</h3>
+              <table aria-label="Monthly risk statistics comparing portfolio and benchmark">
+                <thead>
+                  <tr><th>Measure</th><th>Portfolio</th><th>Benchmark</th></tr>
+                </thead>
+                <tbody id="riskStatisticRows">
+                  <tr><th>Annualised volatility</th><td>—</td><td>—</td></tr>
+                  <tr><th>Best month</th><td>—</td><td>—</td></tr>
+                  <tr><th>Worst month</th><td>—</td><td>—</td></tr>
+                  <tr><th>Positive months</th><td>—</td><td>—</td></tr>
+                  <tr><th>Downside volatility</th><td>—</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="section grid-wide download-section">
         <div class="section-header">
           <h2>Download Factsheet</h2>
@@ -1598,7 +1687,6 @@
         <path d="${line(1)}" fill="none" stroke="#005daa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
         ${chartData.map((d, i) => `<circle cx="${x(i)}" cy="${y(d[1])}" r="4" fill="#005daa"></circle>`).join("")}
         ${chartData.map((d, i) => `<circle cx="${x(i)}" cy="${y(d[2])}" r="3.2" fill="#17895b"></circle>`).join("")}
-        <text class="axis-label" x="${width - 196}" y="18">${years} year view, rebased to 100</text>
       `;
     }
 
@@ -1616,6 +1704,6 @@
     renderHoldings();
   </script>
   <script src="data/factsheets.js?v=20260720-1"></script>
-  <script src="factsheet.js?v=20260720-3"></script>
+  <script src="factsheet.js?v=20260720-6"></script>
 </body>
 </html>
