@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 .pnpm-store/
+__pycache__/
+tmp/
 
 # Generated local and temporary files
 *.log

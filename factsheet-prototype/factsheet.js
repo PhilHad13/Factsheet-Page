@@ -385,6 +385,16 @@
   function renderPortfolio() {
     const portfolio = currentPortfolio();
     if (!portfolio) return;
+    const downloadLink = document.getElementById("downloadFactsheet");
+    if (portfolio.pdfFileName) {
+      downloadLink.href = `pdfs/${encodeURIComponent(portfolio.pdfFileName)}?v=20260721-final`;
+      downloadLink.download = portfolio.pdfFileName;
+      downloadLink.setAttribute("aria-disabled", "false");
+    } else {
+      downloadLink.href = "#";
+      downloadLink.removeAttribute("download");
+      downloadLink.setAttribute("aria-disabled", "true");
+    }
     syncSelectors();
     renderHeading(portfolio);
     renderObjective(portfolio);
@@ -449,6 +459,5 @@
     });
   });
 
-  document.getElementById("downloadFactsheet").addEventListener("click", (event) => event.preventDefault());
   renderPortfolio();
 })();

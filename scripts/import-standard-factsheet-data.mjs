@@ -52,11 +52,16 @@ function excelDateToIso(value) {
 
 function recordsFromSheet(sheet) {
   const values = sheet.getUsedRange().values;
-  const headers = values[2]?.map((value) => String(value ?? "").trim());
-  if (!headers?.[0]) throw new Error(`Sheet ${sheet.name} does not contain headers in row 3.`);
-  return values.slice(3)
+  const headerRowIndex = values.findIndex((row) => String(row[0] ?? "").trim() === "portfolio_id");
+  if (headerRowIndex < 0) throw new Error(`Sheet ${sheet.name} does not contain a portfolio_id header.`);
+  const headers = values[headerRowIndex].map((value) => String(value ?? "").trim());
+  return values.slice(headerRowIndex + 1)
     .filter((row) => row.some((value) => value !== null && value !== ""))
-    .map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index]])));
+    .map((row) => {
+      const record = Object.fromEntries(headers.map((header, index) => [header, row[index]]));
+      record.portfolio_id = String(record.portfolio_id ?? "").trim().replaceAll(" ", "_");
+      return record;
+    });
 }
 
 function groupBy(records, field) {
@@ -220,6 +225,8 @@ const normaliseRegion = (name) => ({
   EM: "Emerging Markets",
 }[name] ?? name);
 
+const cleanText = (value) => String(value ?? "").trim().replace(/\s+/g, " ");
+
 const input = await FileBlob.load(sourcePath);
 const workbook = await SpreadsheetFile.importXlsx(input);
 for (const sheetName of requiredSheets) workbook.worksheets.getItem(sheetName);
@@ -237,14 +244,14 @@ const warnings = [];
 const portfolios = {};
 for (const factsheet of factsheets) {
   const portfolioId = String(factsheet.portfolio_id);
-  const portfolioName = String(factsheet.portfolio_name ?? "").trim();
-  const currency = String(factsheet.currency ?? "").trim();
+  const portfolioName = cleanText(factsheet.portfolio_name);
+  const currency = cleanText(factsheet.currency);
   const [type = "Active", ...riskParts] = portfolioName.split(/\s+/);
   const risk = riskParts.join(" ") || portfolioName;
   const targetEquity = Number(risk.match(/\d+/)?.[0] ?? 0);
   const information = (informationByPortfolio.get(portfolioId) ?? [])
     .sort((a, b) => Number(a.field_order) - Number(b.field_order))
-    .map((row) => ({ label: String(row.field_label ?? ""), value: String(row.field_value ?? "") }))
+    .map((row) => ({ label: cleanText(row.field_label), value: cleanText(row.field_value) }))
     .filter((row) => row.label);
   const allocationRows = (allocationByPortfolio.get(portfolioId) ?? [])
     .sort((a, b) => Number(a.display_order) - Number(b.display_order))
@@ -252,7 +259,7 @@ for (const factsheet of factsheets) {
       const allocation = asPercent(row.weight_pct);
       const benchmark = asPercent(row.benchmark_weight_pct);
       return {
-        name: normaliseAssetClass(String(row.asset_class)),
+        name: normaliseAssetClass(cleanText(row.asset_class)),
         allocation,
         benchmark,
         diff: allocation === null || benchmark === null ? null : round(allocation - benchmark, 2),
@@ -261,15 +268,15 @@ for (const factsheet of factsheets) {
   const regionalExposure = (regionsByPortfolio.get(portfolioId) ?? [])
     .sort((a, b) => Number(a.display_order) - Number(b.display_order))
     .map((row) => ({
-      name: normaliseRegion(String(row.region)),
+      name: normaliseRegion(cleanText(row.region)),
       allocation: asPercent(row.weight_pct),
     }));
   const holdingsRecords = holdingsByPortfolio.get(portfolioId) ?? [];
   const holdings = holdingsRecords.map((row, index) => ({
     rank: index + 1,
-    name: String(row.holding_name ?? ""),
+    name: cleanText(row.holding_name),
     weight: asPercent(row.weight_pct),
-    assetClass: normaliseAssetClass(String(row.Asset_Class ?? "Other")),
+    assetClass: normaliseAssetClass(cleanText(row.Asset_Class || "Other")),
   }));
   const totalHoldings = asNumber(holdingsRecords[0]?.holding_count_total) ?? holdings.length;
 
@@ -288,8 +295,10 @@ for (const factsheet of factsheets) {
     risk,
     name: portfolioName.endsWith(currency) ? portfolioName : `${portfolioName} ${currency}`,
     displayTitle: String(factsheet.display_title ?? ""),
-    objective: String(factsheet.objective ?? "").trim(),
-    benchmarkName: String(factsheet.benchmark_name ?? ""),
+    websiteSlug: cleanText(factsheet.website_slug),
+    pdfFileName: cleanText(factsheet.pdf_file_name),
+    objective: cleanText(factsheet.objective),
+    benchmarkName: cleanText(factsheet.benchmark_name),
     targetEquity,
     information,
     ocf: asPercent(ocfValue),
