@@ -373,11 +373,15 @@
     const line = (field) => chartData.map((point, index) => `${index === 0 ? "M" : "L"} ${x(index).toFixed(2)} ${y(point[field]).toFixed(2)}`).join(" ");
     const gridStep = Math.max(1, Math.ceil((max - min) / 4));
     const gridValues = Array.from({ length: 6 }, (_, index) => min + index * gridStep).filter((value) => value <= max);
-    const tickEvery = Math.max(1, Math.round(chartData.length / Math.min(5, chartData.length)));
+    const tickCount = Math.min(5, chartData.length);
+    const tickIndexes = new Set(Array.from(
+      { length: tickCount },
+      (_, index) => Math.round((index * (chartData.length - 1)) / Math.max(tickCount - 1, 1)),
+    ));
     svg.innerHTML = `
       <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff"></rect>
       ${gridValues.map((value) => `<line class="grid-line" x1="${margin.left}" x2="${width - margin.right}" y1="${y(value)}" y2="${y(value)}"></line><text class="axis-label" x="10" y="${y(value) + 4}">${value}</text>`).join("")}
-      ${chartData.map((point, index) => index % tickEvery === 0 || index === chartData.length - 1 ? `<text class="axis-label" x="${x(index) - 18}" y="${height - 12}">${escapeHtml(point.label)}</text>` : "").join("")}
+      ${chartData.map((point, index) => tickIndexes.has(index) ? `<text class="axis-label" x="${x(index) - 18}" y="${height - 12}">${escapeHtml(point.label)}</text>` : "").join("")}
       <path d="${line("benchmark")}" fill="none" stroke="#c77700" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
       <path d="${line("portfolio")}" fill="none" stroke="#005daa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>`;
   }
@@ -387,7 +391,8 @@
     if (!portfolio) return;
     const downloadLink = document.getElementById("downloadFactsheet");
     if (portfolio.pdfFileName) {
-      downloadLink.href = `pdfs/${encodeURIComponent(portfolio.pdfFileName)}?v=20260721-final`;
+      const pdfVersion = String(dataset.meta.generatedAt || dataset.meta.dataAsOf || "latest").replace(/[^0-9A-Za-z]/g, "");
+      downloadLink.href = `pdfs/${encodeURIComponent(portfolio.pdfFileName)}?v=${encodeURIComponent(pdfVersion)}`;
       downloadLink.download = portfolio.pdfFileName;
       downloadLink.setAttribute("aria-disabled", "false");
     } else {
